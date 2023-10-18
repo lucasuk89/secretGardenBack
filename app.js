@@ -71,9 +71,9 @@ app.post("/api/login", (req, res) => {
     const { name, image, description } = req.body;
   
     // Execute a inserção dos dados no banco de dados.
-    const insertQuery = 'INSERT INTO Items (name, image, description) VALUES (?, ?, ?)';
+    const insertQuery = 'INSERT INTO Items (ItemName, ItemImage, ItemDescription) VALUES (?, ?, ?)';
   
-    db.query(insertQuery, [name, image, description], (err, results) => {
+    db.query(insertQuery, [name, "banana", description], (err, results) => {
       if (err) {
         console.log('Erro ao inserir dados no banco de dados:', err);
         res.status(500).json({ message: 'Erro no servidor' });
