@@ -52,7 +52,7 @@ app.post('/api/register',(req,res)=>{
 
 app.post("/api/login", (req, res) => {
     const { email, password } = req.body;
-    const query = "SELECT * FROM users WHERE email = ? AND password = ?";
+    const query = "SELECT * FROM Users WHERE email = ? AND password = ?";
   
     db.query(query, [email, password], (err, results) => {
       if (err) {
@@ -61,19 +61,21 @@ app.post("/api/login", (req, res) => {
       } else if (results.length < 1) {
         res.status(401).send("Incorrect email or password");
       } else {
-        res.json({ message: "Successful login", usuario: results[0] });
+        let userId = results[0].id;
+        let email = results[0].email;
+        res.json({ message: "Successful login", usuario: {userId,email} });
       }
     });
   });
 
 
   app.post('/api/dashboard', (req, res) => {
-    const { name, author, description, users_id } = req.body;
+    const { name, author, description, user_id } = req.body;
   
     // Execute a inserção dos dados no banco de dados.
-    const insertQuery = 'INSERT INTO Items (name, author, description, users_id) VALUES (?, ?, ?)';
+    const insertQuery = 'INSERT INTO Items (name, author, description, user_id) VALUES (?, ?, ?, ?)';
   
-    db.query(insertQuery, [name, author, description, users_id], (err, results) => {
+    db.query(insertQuery, [name, author, description, user_id], (err, results) => {
       if (err) {
         console.log('Erro ao inserir dados no banco de dados:', err);
         res.status(500).json({ message: 'Erro no servidor' });
