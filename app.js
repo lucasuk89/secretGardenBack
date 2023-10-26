@@ -2,12 +2,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
+app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+
+
 
 app.listen(3000, () => {
   console.log('Express server is working');
@@ -122,6 +126,30 @@ app.patch('/api/dashboard/items/:id', (req, res) => {
 });
 
 
+//COOKIES
+
+app.get('/setcookie', (req, res) => {
+  res.cookie('datas', 'mycookie', {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    httpOnly: true,
+    secure: true,
+  });
+  res.send('Cookie set successfully');
+});
+
+
+app.get('/getcookies', (req, res) => {
+  const cookies = req.cookies;
+  res.json(cookies);
+});
+
+
+app.get('/deletecookie', (req, res) => {
+  res.clearCookie('datas'); // Exclui o cookie chamado 'datas'
+  res.send('Cookie successfully deleted');
+});
+
+
 
 app.get('/api/dashboard/items/:userId', (req, res) => {
   // write method that recover all the items from the database based on the userId
@@ -154,4 +182,22 @@ app.delete('/api/dashboard/items/:id', (req, res) => {
     }
   });
 });
+
+
+//COOKIES
+app.get('/api/dashboard/items', (req, res) => {
+  const username = req.cookies.username;
+  const query = 'SELECT * FROM Items where user_id = ?';
+
+  db.query(query, [username], (err, results) => {
+    if (err) {
+      console.log('Erro ao recuperar dados do banco de dados:', err);
+      res.status(500).json({ message: 'Erro no servidor' });
+    } else {
+      console.log('Dados recuperados com sucesso do banco de dados.');
+      res.json({ items: results });
+    }
+  });
+});
+
 
